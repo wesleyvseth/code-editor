@@ -24,12 +24,12 @@ const App = () => {
         }, []
     );
 
-    iFrame.current.srcdoc = html;
-
     const onClick = async () => {
         if (!ref.current) {
             return;
         }
+
+        iFrame.current.srcdoc = html;
 
         const result = await ref.current.build(
             {
