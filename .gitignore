@@ -11,6 +11,9 @@
 # production
 /build
 
+#IntelIj
+.idea
+
 # misc
 .DS_Store
 .env.local
