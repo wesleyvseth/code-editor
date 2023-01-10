@@ -1,19 +1,103 @@
-import React from 'react';
-import ReactDOM from 'react-dom/client';
-import './index.css';
-import App from './App';
-import reportWebVitals from './reportWebVitals';
+import ReactDOM from 'react-dom';
+import { useState, useEffect, useRef } from 'react';
+import * as esbuild from 'esbuild-wasm'
+import { unpkgPathPlugin } from "./plugins/unpkg-path-plugin";
+import { fetchPlugin } from './plugins/fetch-plugin';
 
-const root = ReactDOM.createRoot(
-  document.getElementById('root') as HTMLElement
-);
-root.render(
-  <React.StrictMode>
-    <App />
-  </React.StrictMode>
-);
+const App = () => {
+    const ref = useRef<any>();
+    const iFrame = useRef<any>();
+    const [input, setInput] = useState('');
 
-// If you want to start measuring performance in your app, pass a function
-// to log results (for example: reportWebVitals(console.log))
-// or send to an analytics endpoint. Learn more: https://bit.ly/CRA-vitals
-reportWebVitals();
+    const startService = async () => {
+        ref.current = await esbuild.startService(
+            {
+                worker: true,
+                wasmURL: 'https://unpkg.com/esbuild-wasm@0.8.27/esbuild.wasm',
+            },
+        );
+    } 
+
+    useEffect(
+        () => {
+            startService()
+        }, []
+    );
+
+    iFrame.current.srcdoc = html;
+
+    const onClick = async () => {
+        if (!ref.current) {
+            return;
+        }
+
+        const result = await ref.current.build(
+            {
+                entryPoints: [
+                    'index.js',
+                ],
+                bundle: true,
+                write: false,
+                plugins: [
+                    unpkgPathPlugin(),
+                    fetchPlugin(
+                        input
+                    )
+                ],
+                define: {
+                    'process.env.NODE_ENV': '"production"',
+                    global: 'window'
+                },
+            },
+        );
+
+        iFrame.current.contentWindow.postMessage(result.outputFiles[0].text, '*');
+    }
+
+
+
+    return (
+        <div>
+            <textarea value={input} onChange={e => setInput(e.target.value)}>
+            </textarea>
+
+            <div>
+                <button onClick={onClick}> Submit </button>
+            </div>
+
+            <iframe title="preview" ref={iFrame} sandbox="allow-scripts" srcDoc={html}>
+            
+            </iframe>
+        </div>
+    );
+}
+
+const html = `
+<html>
+    <head>
+    </head>
+    <body>
+        <div id='root'>
+        </div>
+        
+        <script>
+            window.addEventListener('message', (event) => {
+                try {
+                    eval(event.data);
+                } catch(err) {
+                    const root = document.querySelector('#root');
+
+                    root.innerHTML = '<div style="color:red;"> <h4> Runtime error: </h4>' + err +  '</div>';
+                    console.error(err);
+                }
+            }, false);
+        </script>
+    </body>
+</html>
+`;
+
+
+ReactDOM.render(
+    <App />,
+    document.querySelector('#root'),
+);
