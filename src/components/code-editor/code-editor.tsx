@@ -24,7 +24,7 @@ const CodeEditor: React.FC<CodeEditorProps> = (
     ) => {
         editorRef.current = monacoEditor;
 
-        monacoEditor.onDidChangeModelContent( 
+        monacoEditor.onDidChangeModelContent(
             () => {
                 onChange(getValue());
             }

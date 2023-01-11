@@ -1,4 +1,4 @@
-import { useState } from 'react';
+import {useEffect, useState} from 'react';
 
 import CodeEditor from '../code-editor/code-editor';
 import Preview from "../preview/preview";
@@ -8,6 +8,22 @@ import Resizable from "../resizable/rezisable";
 const CodeCell = () => {
     const [input, setInput] = useState('');
     const [code, setCode] = useState('');
+
+    useEffect(
+        () => {
+            const timer = setTimeout(
+                async () => {
+                    await executeCode();
+                },
+                1000
+            );
+
+            return () => {
+                clearTimeout(timer);
+            }
+        },
+        [input]
+    );
 
     const executeCode = async () => {
         const builtCode = await bundle(input);
