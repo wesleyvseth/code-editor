@@ -16,27 +16,27 @@ const bundle = async (
         );
     }
 
-    const builtCode = await service.build(
-        {
-            entryPoints: [
-                'index.js',
-            ],
-            bundle: true,
-            write: false,
-            plugins: [
-                unpkgPathPlugin(),
-                fetchPlugin(
-                    rawCode
-                )
-            ],
-            define: {
-                'process.env.NODE_ENV': '"production"',
-                global: 'window'
+        const builtCode = await service.build(
+            {
+                entryPoints: [
+                    'index.js',
+                ],
+                bundle: true,
+                write: false,
+                plugins: [
+                    unpkgPathPlugin(),
+                    fetchPlugin(
+                        rawCode
+                    )
+                ],
+                define: {
+                    'process.env.NODE_ENV': '"production"',
+                    global: 'window'
+                },
             },
-        },
-    );
+        );
 
-    return builtCode.outputFiles[0].text;
+        return builtCode.outputFiles[0].text;
 }
 
 export default bundle;

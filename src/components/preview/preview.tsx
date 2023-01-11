@@ -21,14 +21,22 @@ const html = `
             </div>
             
             <script>
+                const handleError = (err) => {
+                    const root = document.querySelector('#root');
+                    root.innerHTML = '<div style="color:red;"> <h4> Runtime error: </h4>' + err +  '</div>';
+                    console.error(err);
+                };
+                
+                window.addEventListener('error', (event) => {
+                    event.preventDefault();
+                    handleError(event.error.message);
+                });
+            
                 window.addEventListener('message', (event) => {
                     try {
                         eval(event.data);
                     } catch(err) {
-                        const root = document.querySelector('#root');
-    
-                        root.innerHTML = '<div style="color:red;"> <h4> Runtime error: </h4>' + err +  '</div>';
-                        console.error(err);
+                       handleError(err);
                     }
                 }, false);
             </script>
@@ -37,7 +45,7 @@ const html = `
 `;
 
 const Preview: React.FC<PreviewProps> = (
-    { code }
+    { code}
 ) => {
     const iFrame = useRef<any>();
 

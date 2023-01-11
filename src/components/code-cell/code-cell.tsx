@@ -28,9 +28,7 @@ const CodeCell = () => {
     const executeCode = async () => {
         const builtCode = await bundle(input);
 
-        setCode(
-            builtCode
-        );
+        setCode(builtCode);
     };
 
     return (
