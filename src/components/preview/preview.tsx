@@ -10,6 +10,11 @@ interface PreviewProps {
 const html = `
     <html>
         <head>
+            <style>
+                html {
+                    background-color:white;
+                }
+            </style>
         </head>
         <body>
             <div id='root'>
@@ -46,9 +51,8 @@ const Preview: React.FC<PreviewProps> = (
     )
 
     return (
-        <div>
+        <div className="preview-wrapper">
             <iframe
-                className="preview-wrapper"
                 title="preview"
                 ref={iFrame}
                 sandbox="allow-scripts"
