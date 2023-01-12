@@ -19,14 +19,13 @@ const initialState: CellsState = {
     data: {},
 };
 
-//Wrapping the reducer with produce makes use of the Immer NPM package which simplifies updating states. Instead of return the complete same object with 1 modification
+// Wrapping the reducer with produce makes use of the Immer NPM package which simplifies updating states. Instead of return the complete same object with 1 modification
 // we can simply change the object we actually updated and Immer will make sure to return a proper Redux friendly object.
 const reducer = produce(
     (
         state: CellsState = initialState,
         action: Action,
     ) => {
-
         switch (action.type) {
             case ActionType.UPDATE_CELL:
                 // The id and content of the to be updated cell
@@ -35,7 +34,7 @@ const reducer = produce(
 
                 state.data[id].content = content;
 
-                return;
+                return state;
 
             case ActionType.DELETE_CELL:
                 delete state.data[action.payload];
@@ -44,7 +43,7 @@ const reducer = produce(
                     id => id !== action.payload
                 );
 
-                return;
+                return state;
 
             case ActionType.MOVE_CELL:
                 const {direction} = action.payload;
@@ -61,25 +60,38 @@ const reducer = produce(
                 state.order[index] = state.order[targetIndex];
                 state.order[targetIndex] = action.payload.id;
 
-                return;
+                return state;
 
             case ActionType.INSERT_CELL_BEFORE:
                 const cell: Cell = {
                     type: action.payload.type,
                     content: '',
-                    id: '';
+                    id: randomId(),
+                };
+
+                state.data[cell.id] = cell;
+
+                const foundIndex = state.order.findIndex(
+                    id => id === action.payload.id
+                );
+
+                if (foundIndex < 0 ) {
+                    state.order.push(cell.id);
+                } else {
+                    state.order.splice(foundIndex, 0, cell.id);
                 }
 
-                return;
+                return state;
 
             default:
                 return state;
         }
-    }
+    },
+    initialState
 )
 
-const randomId = () => {
-    Math.random().toString(36).substr(
+const randomId = (): string => {
+    return Math.random().toString(36).substring(
         2,5
     );
 }
