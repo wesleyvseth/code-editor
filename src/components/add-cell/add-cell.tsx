@@ -10,13 +10,13 @@ interface AddCellProps {
 const AddCell: React.FC<AddCellProps> = (
     { nextCellId }
 ) => {
-    const { insertCellBefore } = useActions();
+    const { insertCellAfter } = useActions();
 
     return (
         <div className="add-cell">
             <div className="add-buttons-wrapper">
-                <button className="add-button button is-primary is-small" onClick={() => insertCellBefore(nextCellId, 'code')}> Code </button>
-                <button className="add-button button is-primary is-small" onClick={() => insertCellBefore(nextCellId, 'text')}> Text </button>
+                <button className="add-button button is-primary is-small" onClick={() => insertCellAfter(nextCellId, 'code')}> Code </button>
+                <button className="add-button button is-primary is-small" onClick={() => insertCellAfter(nextCellId, 'text')}> Text </button>
             </div>
 
             <div className="divider"></div>
