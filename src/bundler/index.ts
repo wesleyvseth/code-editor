@@ -2,11 +2,16 @@ import * as esbuild from 'esbuild-wasm'
 import { unpkgPathPlugin } from "./plugins/unpkg-path-plugin";
 import { fetchPlugin } from './plugins/fetch-plugin';
 
+interface BundledResult {
+    code: string,
+    bundleErr: any,
+};
+
 let service: esbuild.Service;
 
 const bundle = async (
     rawCode: string,
-) =>  {
+): Promise<BundledResult> =>  {
     if(!service) {
         service = await esbuild.startService(
             {
@@ -16,6 +21,7 @@ const bundle = async (
         );
     }
 
+    try {
         const builtCode = await service.build(
             {
                 entryPoints: [
@@ -36,7 +42,17 @@ const bundle = async (
             },
         );
 
-        return builtCode.outputFiles[0].text;
+        return {
+            code: builtCode.outputFiles[0].text,
+            bundleErr: '',
+        }
+    } catch(err: any) {
+        return {
+            code: '',
+            bundleErr: err.message,
+        };
+    }
+
 }
 
 export default bundle;

@@ -3,6 +3,7 @@ import './preview.css';
 
 interface PreviewProps {
     code: string,
+    bundleErr: string,
     children?: React.ReactNode;
 }
 
@@ -45,13 +46,15 @@ const html = `
 `;
 
 const Preview: React.FC<PreviewProps> = (
-    { code}
+    { code, bundleErr}
 ) => {
     const iFrame = useRef<any>();
 
     useEffect(
         () => {
-            iFrame.current.srcdoc = html;
+            if (!bundleErr) {
+                iFrame.current.srcdoc = html;
+            }
 
             setTimeout(
                 () => {
@@ -65,11 +68,19 @@ const Preview: React.FC<PreviewProps> = (
 
     return (
         <div className="preview-wrapper">
-            <iframe
+            {
+                bundleErr && <div className="bundle-error-wrapper">
+                    <span className="bundle-error">  {bundleErr} </span>
+                </div>
+            }
+
+            {
+                !bundleErr && <iframe
                 title="preview"
                 ref={iFrame}
                 sandbox="allow-scripts"
                 srcDoc={html}/>
+            }
         </div>
 
     )

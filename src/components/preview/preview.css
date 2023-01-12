@@ -2,6 +2,7 @@
     position:relative;
     height:100%;
     flex-grow: 1;
+    background: white;
 }
 
 .preview-wrapper iframe {
@@ -28,4 +29,12 @@
     left:0;
     right:0;
     opacity:0;
+}
+
+.bundle-error-wrapper {
+    padding:30px;
+}
+
+.bundle-error {
+    color:red;
 }
